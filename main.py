@@ -20,9 +20,28 @@ def entropy(RS, T, v, cv, R):
 	return RS.s + cv * ln(T/RS.T) + R * ln(v/RS.v)
 
 
+def specific_heats(T, R):
+
+	# T must be in Kelvin.
+
+	C0 = 1.05
+	C1 = -0.365
+	C2 = 0.85
+	C3 = -0.39
+
+	H = T / 1000
+
+	cp = C0 + C1 * H + C2 * H ** 2 + C3 * H ** 3
+	cv = cp - R
+	k = cp / cv
+
+	return cp, cv, k
+
+
 def isentropic(RS, prop, typ, k, R):
 
 	s = RS.s
+	cp, cv, k = specific_heat_p(RS.T)
 	C = RS.P * RS.v ** k
 
 	match typ:
@@ -36,6 +55,7 @@ def isentropic(RS, prop, typ, k, R):
 			T = P * v / R
 		case 'T':
 			T = prop
+			cp, cv, k = specific_heat_p(T)
 			v = (C / R * T) ** (1 / (k - 1))
 			P = R * T / v 
 		case _:
@@ -86,8 +106,17 @@ def array(a, b):
 	return linspace(a, b, 4320)
 
 
-def pv(states, label):
-	plt.plot([s.v for s in states], [s.P for s in states], label = label)
+def pv(states, labels):
+
+	plt.xlabel(r"$\nu$ (m$^3/$kg)")
+	plt.ylabel("P (kPa)")
+	plt.title(r"P-$\nu$ diagram")
+
+	for i in range(len(states)):
+		plt.plot([s.v for s in states[i]], [s.P/1000 for s in states[i]], label = labels[i])
+
+	plt.legend(loc='best')
+	plt.show()
 
 
 def work(states):
@@ -99,14 +128,26 @@ def work(states):
 	return w
 
 
-def otto(cr, QS):
+def printres(cycle, w, qs, qr):
+
+	err_w = abs(w - (qs - qr)) / w * 100
+	ef = w / qs * 100
+
+	print(cycle)
+	print('----------------')
+	print('w = {:.0f} kJ/kg'.format(w / 1000))
+	print('qs = {:.0f} kJ/kg'.format(qs / 1000))
+	print('qr = {:.0f} kJ/kg'.format(qr / 1000))
+	print('ef = {:.0f}%'.format(ef))
+	print('err_w = {:.2f}%'.format(err_w))
+	print('----------------')
+
+
+def otto(cr, qs):
 
 	states = []
 
-	cp = 1004
 	R = 287
-	cv = cp - R
-	k = cp / cv
 
 	GS = State(101325, 0.6, 0, R)
 	RS = GS
@@ -117,9 +158,11 @@ def otto(cr, QS):
 		states.append(S)
 	
 	RS = states[-1]
-	T3 = RS.T + QS / cv
+	cp, cv, k = specific_heat_p(RS.T)
+	T3 = RS.T + qs / cv
 
 	for T in array(RS.T, T3):
+		cp, cv, k = specific_heat_p(T)
 		S = isochoric(RS, T, 'T', cv, R)
 		states.append(S)
 
@@ -135,12 +178,16 @@ def otto(cr, QS):
 		S = isochoric(RS, T, 'T', cv, R)
 		states.append(S)
 	
-	print('Work from Otto = {:.0f} kJ'.format(work(states)/1000))
+	qr = cv * (RS.T - GS.T)
+
+	w = work(states)
+
+	printres('Otto', w, qs, qr)
 
 	return states
 
 
-def diesel(cr, QS):
+def diesel(cr, qs):
 
 	states = []
 
@@ -158,7 +205,7 @@ def diesel(cr, QS):
 		states.append(S)
 	
 	RS = states[-1]
-	T3 = RS.T + QS / cp
+	T3 = RS.T + qs / cp
 
 	for T in array(RS.T, T3):
 		S = isobaric(RS, T, 'T', cv, R)
@@ -175,22 +222,38 @@ def diesel(cr, QS):
 	for T in array(RS.T, GS.T):
 		S = isochoric(RS, T, 'T', cv, R)
 		states.append(S)
-	
-	print('Work from Diesel = {:.0f} kJ'.format(work(states)/1000))
 
+	qr = cv * (RS.T - GS.T)
+
+	w = work(states)
+
+	printres('Diesel', w, qs, qr)
+	
 	return states
 
 
+def same_cr_same_heat_input():
+
+	cr = 6
+	qs = 500000
+
+	print('Results for given cr = {:.0f} and qs = {:.0f} kJ/kg'.format(cr, qs/1000))
+	print('----------------')
+
+	states_otto = otto(cr, qs)
+	states_diesel = diesel(cr, qs)
+
+	pv([states_otto, states_diesel], ['Otto', 'Diesel'])
+
+
 def main():
-	states_otto = otto(6, 500000)
-	states_diesel = diesel(6, 500000)
-	pv(states_otto, 'Otto')
-	pv(states_diesel, 'Diesel')
-	plt.show()
+
+	same_cr_same_heat_input()
 	
 
 if __name__ == '__main__':
 	main()
+
 
 
 
