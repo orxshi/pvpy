@@ -1,6 +1,12 @@
-from numpy import linspace as linspace
 from math import log as ln
 import matplotlib.pyplot as plt
+from std_entropy import snot
+import numpy as np
+import copy
+
+
+
+
 
 class State:
 
@@ -16,11 +22,14 @@ class State:
 		return "P: {:.1f}\nv: {:.1f}\nT: {:.1f}\ns: {:.1f}".format(self.P, self.v, self.T, self.s)
 
 
-def entropy(RS, T, v, cv, R):
+def entropy_const_cap(RS, T, v, cv, R):
 	return RS.s + cv * ln(T/RS.T) + R * ln(v/RS.v)
 
+def entropy_var_cap(RS, T, v, R):
+	return snot(T) - snot(RS.T) + R * ln(v/RS.v)
 
-def specific_heats(T, R):
+
+def specific_heats(T, R, const_cap):
 
 	# T must be in Kelvin.
 
@@ -32,16 +41,21 @@ def specific_heats(T, R):
 	H = T / 1000
 
 	cp = C0 + C1 * H + C2 * H ** 2 + C3 * H ** 3
+	cp *= 1000
+
+	if const_cap is True:
+		cp = 1005
+
 	cv = cp - R
 	k = cp / cv
 
 	return cp, cv, k
 
 
-def isentropic(RS, prop, typ, k, R):
+def isentropic(RS, prop, typ, R, const_cap):
 
 	s = RS.s
-	cp, cv, k = specific_heat_p(RS.T)
+	cp, cv, k = specific_heats(RS.T, R, const_cap)
 	C = RS.P * RS.v ** k
 
 	match typ:
@@ -51,11 +65,11 @@ def isentropic(RS, prop, typ, k, R):
 			T = P * v / R
 		case 'v':
 			v = prop
-			P = C / v ** k
+			P = C / v ** k # wrong! works only for const cap!
 			T = P * v / R
 		case 'T':
 			T = prop
-			cp, cv, k = specific_heat_p(T)
+			cp, cv, k = specific_heats(T, R, const_cap)
 			v = (C / R * T) ** (1 / (k - 1))
 			P = R * T / v 
 		case _:
@@ -64,7 +78,7 @@ def isentropic(RS, prop, typ, k, R):
 	return State(P, v, s, R)
 
 
-def isobaric(RS, prop, typ, cv, R):
+def isobaric(RS, prop, typ, R, const_cap):
 
 	P = RS.P
 
@@ -72,18 +86,26 @@ def isobaric(RS, prop, typ, cv, R):
 		case 'v':
 			v = prop
 			T = P * v / R
-			s = entropy(RS, T, v, cv, R)
+			cp, cv, k = specific_heats(RS.T, R, const_cap)
+			if const_cap is True:
+				s = entropy_const_cap(RS, T, v, cv, R)
+			else:
+				s = entropy_var_cap(RS, T, v, R)
 		case 'T':
 			T = prop
 			v = R * T / P
-			s = entropy(RS, T, v, cv, R)
+			cp, cv, k = specific_heats(RS.T, R, const_cap)
+			if const_cap is True:
+				s = entropy_const_cap(RS, T, v, cv, R)
+			else:
+				s = entropy_var_cap(RS, T, v, R)
 		case _:
 			assert(False)
 
 	return State(P, v, s, R)
 
 
-def isochoric(RS, prop, typ, cv, R):
+def isochoric(RS, prop, typ, R, const_cap):
 
 	v = RS.v
 
@@ -91,11 +113,19 @@ def isochoric(RS, prop, typ, cv, R):
 		case 'P':
 			P = prop
 			T = P * v / R
-			s = entropy(RS, T, v, cv, R)
+			cp, cv, k = specific_heats(RS.T, R, const_cap)
+			if const_cap is True:
+				s = entropy_const_cap(RS, T, v, cv, R)
+			else:
+				s = entropy_var_cap(RS, T, v, R)
 		case 'T':
 			T = prop
 			P = R * T / v
-			s = entropy(RS, T, v, cv, R)
+			cp, cv, k = specific_heats(RS.T, R, const_cap)
+			if const_cap is True:
+				s = entropy_const_cap(RS, T, v, cv, R)
+			else:
+				s = entropy_var_cap(RS, T, v, R)
 		case _:
 			assert(False)
 
@@ -103,7 +133,7 @@ def isochoric(RS, prop, typ, cv, R):
 
 
 def array(a, b):
-	return linspace(a, b, 4320)
+	return np.linspace(a, b, 4320)
 
 
 def pv(states, labels):
@@ -114,6 +144,19 @@ def pv(states, labels):
 
 	for i in range(len(states)):
 		plt.plot([s.v for s in states[i]], [s.P/1000 for s in states[i]], label = labels[i])
+
+	plt.legend(loc='best')
+	plt.show()
+
+
+def ts(states, labels):
+
+	plt.xlabel(r"s (J/kgK)")
+	plt.ylabel("T (K)")
+	plt.title(r"T-s diagram")
+
+	for i in range(len(states)):
+		plt.plot([s.s for s in states[i]], [s.T for s in states[i]], label = labels[i])
 
 	plt.legend(loc='best')
 	plt.show()
@@ -143,7 +186,7 @@ def printres(cycle, w, qs, qr):
 	print('----------------')
 
 
-def otto(cr, qs):
+def otto(cr, qs, const_cap):
 
 	states = []
 
@@ -154,31 +197,51 @@ def otto(cr, qs):
 	vL = RS.v / cr
 
 	for v in array(RS.v, vL):
-		S = isentropic(RS, v, 'v', k, R)
+		S = isentropic(RS, v, 'v', R, const_cap)
 		states.append(S)
 	
 	RS = states[-1]
-	cp, cv, k = specific_heat_p(RS.T)
-	T3 = RS.T + qs / cv
 
+	if const_cap is True:
+		cp, cv, k = specific_heats(RS.T, R, const_cap)
+		T3 = RS.T + qs / cv
+	else:
+		qsn = 0
+		prevT = RS.T
+		for T in np.arange(RS.T, 999999999, 10):
+			S = isochoric(RS, T, 'T', R, const_cap)
+			cp, cv, k = specific_heats(RS.T, R, const_cap)
+			qsn += cv * (T - prevT)
+			prevT = copy.copy(T)
+			if qsn >= qs:
+				T3 = T
+				break
+	
+
+	print('T3: ', T3)
+	
 	for T in array(RS.T, T3):
-		cp, cv, k = specific_heat_p(T)
-		S = isochoric(RS, T, 'T', cv, R)
+		S = isochoric(RS, T, 'T', R, const_cap)
 		states.append(S)
 
 	RS = states[-1]
 
 	for v in array(vL, GS.v):
-		S = isentropic(RS, v, 'v', k, R)
+		S = isentropic(RS, v, 'v', R, const_cap)
 		states.append(S)
 
 	RS = states[-1]
 
+	qr = 0
 	for T in array(RS.T, GS.T):
-		S = isochoric(RS, T, 'T', cv, R)
+		S = isochoric(RS, T, 'T', R, const_cap)
 		states.append(S)
+		if const_cap is False:
+			cp, cv, k = specific_heats(RS.T, R, const_cap)
+			qr -= cv * (S.T - states[-2].T)
 	
-	qr = cv * (RS.T - GS.T)
+	if const_cap is True:
+		qr = cv * (RS.T - GS.T)
 
 	w = work(states)
 
@@ -187,34 +250,31 @@ def otto(cr, qs):
 	return states
 
 
-def diesel(cr, qs):
+def diesel(cr, qs, const_cap):
 
 	states = []
 
-	cp = 1004
 	R = 287
-	cv = cp - R
-	k = cp / cv
 
 	GS = State(101325, 0.6, 0, R)
 	RS = GS
 	vL = RS.v / cr
 
 	for v in array(RS.v, vL):
-		S = isentropic(RS, v, 'v', k, R)
+		S = isentropic(RS, v, 'v', R)
 		states.append(S)
 	
 	RS = states[-1]
 	T3 = RS.T + qs / cp
 
 	for T in array(RS.T, T3):
-		S = isobaric(RS, T, 'T', cv, R)
+		S = isobaric(RS, T, 'T', R, const_cap)
 		states.append(S)
 
 	RS = states[-1]
 
 	for v in array(RS.v, GS.v):
-		S = isentropic(RS, v, 'v', k, R)
+		S = isentropic(RS, v, 'v', R)
 		states.append(S)
 
 	RS = states[-1]
@@ -232,6 +292,21 @@ def diesel(cr, qs):
 	return states
 
 
+def same_cr_same_heat_input_const_cap():
+
+	cr = 6
+	qs = 500000
+
+	print('Results for given cr = {:.0f} and qs = {:.0f} kJ/kg'.format(cr, qs/1000))
+	print('----------------')
+
+	states_otto = otto(cr, qs, const_cap = True)
+	states_diesel = diesel(cr, qs, const_cap = True)
+
+	pv([states_otto, states_diesel], ['Otto', 'Diesel'])
+	ts([states_otto, states_diesel], ['Otto', 'Diesel'])
+
+
 def same_cr_same_heat_input():
 
 	cr = 6
@@ -240,10 +315,12 @@ def same_cr_same_heat_input():
 	print('Results for given cr = {:.0f} and qs = {:.0f} kJ/kg'.format(cr, qs/1000))
 	print('----------------')
 
-	states_otto = otto(cr, qs)
-	states_diesel = diesel(cr, qs)
+	states_const = otto(cr, qs, const_cap = True)
+	states_var = otto(cr, qs, const_cap = False)
+	#states_diesel = diesel(cr, qs, const_cap = True)
 
-	pv([states_otto, states_diesel], ['Otto', 'Diesel'])
+	pv([states_const, states_var], ['const', 'var'])
+	#ts([states_otto, states_diesel], ['Otto', 'Diesel'])
 
 
 def main():
@@ -253,16 +330,3 @@ def main():
 
 if __name__ == '__main__':
 	main()
-
-
-
-
-
-
-
-
-
-
-
-
-
