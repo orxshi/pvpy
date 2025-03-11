@@ -8,6 +8,58 @@ from work import work
 from pvts import *
 from conversion import celsius
 
+def otto_Pmax_Tmax_qr(Pmax, Tmax, qr, const_cap):
+
+	states = []
+
+	R = 287 # J/kg.K
+
+	S3 = State.PT(Pmax, Tmax, 0, R)
+	RS = S3
+
+	cp, cv, k = specific_heats(RS.T, R, const_cap)
+
+	# isentropic expansion
+	for v in array(RS.v, RS.v + 1.0):
+		S = isentropic(RS, v, 'v', R, const_cap)
+		states.append(S)
+
+	RS = states[-1]
+
+	T1 = RS.T - qr / cv
+
+	cr = RS.v / S3.v
+
+	# constant-volume heat rejection
+	for T in array(RS.T, T1):
+		S = isochoric(RS, T, 'T', R, const_cap)
+		states.append(S)
+
+	RS = states[-1]
+
+	# isentropic compression
+	for v in array(RS.v, S3.v):
+		S = isentropic(RS, v, 'v', R, const_cap)
+		states.append(S)
+
+	RS = states[-1]
+
+	qs = cv * (S3.T - RS.T)
+
+	# constant-volume heat addition
+	for T in array(RS.T, S3.T):
+		S = isochoric(RS, T, 'T', R, const_cap)
+		states.append(S)
+
+	w = work(states)
+
+	printres('Otto', w, qs, qr, cr)
+
+	return states
+	
+
+
+	
 
 def otto(cr, qs, GS, const_cap):
 	'''
@@ -79,7 +131,7 @@ def otto(cr, qs, GS, const_cap):
 
 	w = work(states)
 
-	printres('Otto', w, qs, qr)
+	printres('Otto', w, qs, qr, cr)
 
 	return states
 
@@ -88,5 +140,9 @@ def otto(cr, qs, GS, const_cap):
 # GS = State.PT(101325, 300, 0, 287)
 # states = otto(6, 1170000, GS, True)
 
-# pv([states], ['Otto'])
-# ts([states], ['Otto'])
+
+
+states = otto_Pmax_Tmax_qr(200000, 600, 60000, True)
+
+pv([states], ['Otto'])
+ts([states], ['Otto'])

@@ -6,12 +6,12 @@ from state import State
 def isobaric(RS, prop, typ, R, const_cap):
 
 	P = RS.P
+	cp, cv, k = specific_heats(RS.T, R, const_cap)
 
 	match typ:
 		case 'v':
 			v = prop
 			T = P * v / R
-			cp, cv, k = specific_heats(RS.T, R, const_cap)
 			if const_cap is True:
 				s = entropy_const_cap(RS, T, v, cv, R)
 			else:
@@ -19,7 +19,6 @@ def isobaric(RS, prop, typ, R, const_cap):
 		case 'T':
 			T = prop
 			v = R * T / P
-			cp, cv, k = specific_heats(RS.T, R, const_cap)
 			if const_cap is True:
 				s = entropy_const_cap(RS, T, v, cv, R)
 			else:

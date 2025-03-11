@@ -6,12 +6,12 @@ from state import State
 def isochoric(RS, prop, typ, R, const_cap):
 
 	v = RS.v
+	cp, cv, k = specific_heats(RS.T, R, const_cap)
 
 	match typ:
 		case 'P':
 			P = prop
 			T = P * v / R
-			cp, cv, k = specific_heats(RS.T, R, const_cap)
 			if const_cap is True:
 				s = entropy_const_cap(RS, T, v, cv, R)
 			else:
@@ -19,7 +19,6 @@ def isochoric(RS, prop, typ, R, const_cap):
 		case 'T':
 			T = prop
 			P = R * T / v
-			cp, cv, k = specific_heats(RS.T, R, const_cap)
 			if const_cap is True:
 				s = entropy_const_cap(RS, T, v, cv, R)
 			else:

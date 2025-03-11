@@ -5,3 +5,6 @@ def work(states):
 		w += states[i].P * (states[i].v - states[i-1].v)
 
 	return w
+
+def work_qr_qs(qr, qs):
+	return qs - qr

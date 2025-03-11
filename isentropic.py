@@ -35,8 +35,9 @@ def isentropic(RS, prop, typ, R, const_cap):
 			T = P * v / R
 		case 'T':
 			T = prop
-			cp, cv, k = specific_heats(T, R, const_cap)
-			v = (C / R * T) ** (1 / (k - 1))
+			# cp, cv, k = specific_heats(T, R, const_cap)
+			# v = (C / R * T) ** (1 / (k - 1))
+			v = RS.v / (T / RS.T) ** (1 / (k - 1))
 			P = R * T / v 
 		case _:
 			assert(False)

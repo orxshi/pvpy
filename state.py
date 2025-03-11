@@ -34,6 +34,12 @@ class State:
 		T = P * v / R
 		return State(P, v, T, s)
 	
+	@classmethod
+	def Tv(cls, T, v, s, R):
+
+		P = R * T / v
+		return State(P, v, T, s)
+	
 	def __str__(self):
 
 		return "P: {:.1f}\nv: {:.1f}\nT: {:.1f}\ns: {:.1f}".format(self.P, self.v, self.T, self.s)
