@@ -1,9 +1,18 @@
-from otto import otto
-from diesel import diesel
+from otto import otto, otto_Pmax_Tmax_qr
+from diesel import diesel, diesel_Pmax_Tmax_qr
 from carnot import carnot_Tmax_qs
 from stirling import stirling_Tmax_qs
 from pvts import *
 from state import State
+
+
+def same_Pmax_Tmax_qr(Pmax, Tmax, qr, const_cap):
+
+	states_diesel = diesel_Pmax_Tmax_qr(200000, 600, 60000, True)
+	states_otto = otto_Pmax_Tmax_qr(200000, 600, 60000, True)
+
+	pv([states_otto, states_diesel], ['Otto', 'Diesel'])
+	ts([states_otto, states_diesel], ['Otto', 'Diesel'])
 
 
 def same_Tmax_qs_const_cap():
@@ -70,6 +79,7 @@ def same_cr_same_heat_input():
 	#ts([states_otto, states_diesel], ['Otto', 'Diesel'])
 
 
-same_cr_same_heat_input_const_cap()
+# same_cr_same_heat_input_const_cap()
 # same_cr_same_heat_input_const_cap_carnot()
 # same_Tmax_qs_const_cap()
+same_Pmax_Tmax_qr(200000, 600, 60000, True)

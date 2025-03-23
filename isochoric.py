@@ -12,17 +12,17 @@ def isochoric(RS, prop, typ, R, const_cap):
 		case 'P':
 			P = prop
 			T = P * v / R
-			if const_cap is True:
-				s = entropy_const_cap(RS, T, v, cv, R)
-			else:
-				s = entropy_var_cap(RS, T, v, R)
+			s = entropy_const_cap(RS, T, v, cv, R)
+			if const_cap == False:
+				s = entropy_ana_var_cap(T, P, RS, R)
+				# s = entropy_var_cap(RS, T, P, R)
 		case 'T':
 			T = prop
 			P = R * T / v
-			if const_cap is True:
-				s = entropy_const_cap(RS, T, v, cv, R)
-			else:
-				s = entropy_var_cap(RS, T, v, R)
+			s = entropy_const_cap(RS, T, v, cv, R)
+			if const_cap == False:
+				s = entropy_ana_var_cap(T, P, RS, R)
+				# s = entropy_var_cap(RS, T, P, R)
 		case _:
 			assert(False)
 

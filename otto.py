@@ -64,29 +64,25 @@ def otto_Pmax_Tmax_qr(Pmax, Tmax, qr, const_cap):
 def otto(cr, qs, GS, const_cap):
 	'''
 	Otto cycle.
-	TODO: const_cap = False does not work since isentropic.py not ready for variable specific heat capacity. 
 
 	Arguments:
 		cr (float): Compression ratio
 		qs (float): Specific heat supplied / input (J/kg)
 		GS: Ground state which corresponds to beginning of compression stroke
-		const_cap: True if specific heat capacity is to be constant
-
+		const_cap: False if specific heat capacity depends on temperature
+		           
 	Returns:
 		states ([State]): List of states in the cycle.
-
-	Nomenclature:
-		RS: Reference state which is the last state of each process
-		vL: Low specific volume which corresponds to end of compression stroke
-		qr: Rejected/released heat
 	'''
 
 	states = []
 
 	R = 287 # J/kg.K
-	cp, cv, k = specific_heats(GS.T, R, const_cap)
+	cp, cv, k = specific_heats(GS.T, R, True)
 
+	# RS: Reference state which is the last state of each process
 	RS = GS
+	# vL: Low specific volume which corresponds to end of compression stroke
 	vL = RS.v / cr
 
 	# isentropic compression
@@ -114,6 +110,7 @@ def otto(cr, qs, GS, const_cap):
 	# isentropic expansion
 	for v in array(vL, GS.v):
 		S = isentropic(RS, v, 'v', R, const_cap)
+		# print(S.v, S.T, S.P, S.s)
 		states.append(S)
 
 	RS = states[-1]
@@ -127,7 +124,7 @@ def otto(cr, qs, GS, const_cap):
 	if const_cap is True:
 		qr = cv * (RS.T - GS.T)
 	else:
-		qr = get_heat_by_integrating_cv_dT(RS.T, GS.T, R)
+		qr = get_heat_by_integrating_cv_dT(GS.T, RS.T, R)
 
 	w = work(states)
 
@@ -136,13 +133,12 @@ def otto(cr, qs, GS, const_cap):
 	return states
 
 
-# Ganesan worked-out 2.7
-# GS = State.PT(101325, 300, 0, 287)
-# states = otto(6, 1170000, GS, True)
+GS = State.PT(101325, 300, 0, 287)
 
+states = otto(6, 1000000, GS, False)
+states_c = otto(6, 1000000, GS, True)
 
+# states = otto_Pmax_Tmax_qr(200000, 600, 60000, True)
 
-states = otto_Pmax_Tmax_qr(200000, 600, 60000, True)
-
-pv([states], ['Otto'])
-ts([states], ['Otto'])
+pv([states, states_c], ['Otto', 'Constant'])
+ts([states, states_c], ['Otto', 'Constant'])

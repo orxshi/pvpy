@@ -144,7 +144,7 @@ def diesel(cr, qs, GS, const_cap):
 # GS = State.PT(101325, 300, 0, 287)
 # states = diesel(6, 1170000, GS, True)
 
-states = diesel_Pmax_Tmax_qr(200000, 600, 60000, True)
+# states = diesel_Pmax_Tmax_qr(200000, 600, 60000, True)
 
-pv([states], ['Diesel'])
-ts([states], ['Diesel'])
+# pv([states], ['Diesel'])
+# ts([states], ['Diesel'])

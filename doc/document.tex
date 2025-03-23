@@ -1,0 +1,303 @@
+\documentclass{article}
+
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage[margin=1.5cm]{geometry}
+
+\newcommand{\vol}{\rotatebox[origin=c]{180}{\ensuremath{A}}}
+
+\title{Relations for ideal gas}
+
+\begin{document}
+
+	\maketitle
+
+	\section{Ideal gas equation}
+
+	\begin{align*}
+		P\nu = RT
+	\end{align*}
+
+	\section{Isentropic process}
+
+	\begin{align*}
+		s = \text{constant}
+	\end{align*}
+
+	\begin{align*}
+		\frac{P_2}{P_1} = \left(\frac{\nu_1}{\nu_2}\right)^k
+	\end{align*}
+
+	\begin{align*}
+		\frac{T_2}{T_1} = \left(\frac{\nu_1}{\nu_2}\right)^{k-1}
+	\end{align*}
+
+	\begin{align*}
+		\frac{T_2}{T_1} = \left(\frac{\nu_1}{\nu_2}\right)^{(k-1)/k}
+	\end{align*}
+
+	\section{Isobaric process}
+
+	\begin{align*}
+		P = \text{constant}
+	\end{align*}
+
+	\begin{align*}
+		s_2 = s_1 + c_\nu \ln\frac{T_2}{T_1} + \text{R}\ln\frac{\nu_2}{\nu_1}
+	\end{align*}
+
+	\section{Isochoric process}
+
+	\begin{align*}
+		\nu = \text{constant}
+	\end{align*}
+
+	\begin{align*}
+		s_2 = s_1 + c_\nu \ln\frac{T_2}{T_1} + \text{R}\ln\frac{\nu_2}{\nu_1}
+	\end{align*}
+
+	\section{Isothermal process}
+
+	\begin{align*}
+		T = \text{constant}
+	\end{align*}
+
+	\begin{align*}
+		P\nu = \text{constant}
+	\end{align*}
+
+	\begin{align*}
+		s_2 = s_1 + c_\nu \ln\frac{T_2}{T_1} + \text{R}\ln\frac{\nu_2}{\nu_1}
+	\end{align*}
+
+
+
+
+	\section{var specific heat}
+
+	\begin{align*}
+		s_2 - s_1 = \int_1^2 c_{v0}\frac{dT}{T} + R\ln\frac{\nu_2}{\nu_1}
+	\end{align*}
+
+	\begin{align*}
+		c_{p0} = C_0 + C_1\theta + C_2\theta^2 + C_3\theta^3
+	\end{align*}
+
+	where, $\theta=T/1000$ and $T$ is in Kelvin.
+
+	\begin{align*}
+		c_{p0} = C_0 + C_1\frac{T}{1000} + C_2\left(\frac{T}{1000}\right)^2 + C_3\left(\frac{T}{1000}\right)^3
+	\end{align*}
+
+	Note theta
+	
+	\begin{align*}
+		c_{v0} = c_{p0} - R
+	\end{align*}
+
+	\begin{align*}
+		\int_1^2 c_{v0}\frac{dT}{T}
+		=
+		\int_1^2 (c_{p0} - R)\frac{dT}{T}
+		=
+		\int_1^2 c_{p0}\frac{dT}{T} - \int_1^2 R\frac{dT}{T}
+		=
+		\int_1^2 c_{p0}\frac{dT}{T} - R\ln\frac{T_2}{T_1}
+	\end{align*}
+
+	\begin{align*}
+		\int_1^2 c_{p0}\frac{dT}{T}
+		&=
+		\int_1^2 \left(C_0 + C_1\frac{T}{1000} + C_2\left(\frac{T}{1000}\right)^2 + C_3\left(\frac{T}{1000}\right)^3\right)\frac{dT}{T}\\
+		&=
+		C_0\int_1^2 \frac{dT}{T} + \frac{C_1}{1000}\int_1^2 dT + \frac{C_2}{10^6}\int_1^2 TdT + \frac{C_3}{10^9}\int_1^2 T^2dT\\
+		&=
+		C_0\ln\frac{T_2}{T_1} + \frac{C_1}{1000}(T_2 - T_1) + \frac{C_2}{2\cdot10^6}(T_2^2 - T_1^2) + \frac{C_2}{3\cdot10^9}(T_2^3 - T_1^3)
+	\end{align*}
+
+	As a result,
+
+	\begin{align*}
+		\int_1^2 c_{v0}\frac{dT}{T}
+		=
+		(C_0 - R)\ln\frac{T_2}{T_1} + \frac{C_1}{1000}(T_2 - T_1) + \frac{C_2}{2\cdot10^6}(T_2^2 - T_1^2) + \frac{C_2}{3\cdot10^9}(T_2^3 - T_1^3)
+	\end{align*}
+
+	Finally,
+
+	\begin{align*}
+		s_2 - s_1 = (C_0 - R)\ln\frac{T_2}{T_1} + \frac{C_1}{1000}(T_2 - T_1) + \frac{C_2}{2\cdot10^6}(T_2^2 - T_1^2) + \frac{C_2}{3\cdot10^9}(T_2^3 - T_1^3) + R\ln\frac{\nu_2}{\nu_1}
+	\end{align*}
+
+	For isentropic process, $s_2=s_1$.
+
+	\begin{align*}
+		0 = (C_0 - R)\ln\frac{T_2}{T_1} + \frac{C_1}{1000}(T_2 - T_1) + \frac{C_2}{2\cdot10^6}(T_2^2 - T_1^2) + \frac{C_2}{3\cdot10^9}(T_2^3 - T_1^3) + R\ln\frac{\nu_2}{\nu_1}
+	\end{align*}
+
+	If specific volume $\nu_2$ is given, the unknown is $T_2$. Writing the function in terms of $T$,
+
+	\begin{align*}
+		f(T) = (C_0 - R)\ln\frac{T}{T_1} + \frac{C_1}{1000}(T - T_1) + \frac{C_2}{2\cdot10^6}(T^2 - T_1^2) + \frac{C_2}{3\cdot10^9}(T^3 - T_1^3) + R\ln\frac{\nu_2}{\nu_1}
+	\end{align*}
+
+	\section{Newton Raphson}
+
+	For NR, derivative of $f(T)$ with respect to $T$ is needed.
+
+	\begin{align*}
+		f^\prime(T) = \frac{C_0 - R}{T} + \frac{C_1}{1000} + \frac{C_2}{10^6}T + \frac{C_2}{10^9}T^2
+	\end{align*}
+
+	Iterate
+
+	\begin{align*}
+		T_\text{new} = T - \frac{f(T)}{f^\prime(T)}
+	\end{align*}
+
+	until $T_\text{new} - T < \epsilon$
+
+	\section{var specific heat 2}
+
+	\begin{align*}
+		s_2 - s_1 = \int_1^2 c_{P0}\frac{dT}{T} - R\ln\frac{P_2}{P_1}
+	\end{align*}
+
+	\begin{align*}
+		c_{p0} = C_0 + C_1\theta + C_2\theta^2 + C_3\theta^3
+	\end{align*}
+
+	where, $\theta=T/1000$ and $T$ is in Kelvin.
+
+	\begin{align*}
+		c_{p0} = C_0 + C_1\frac{T}{1000} + C_2\left(\frac{T}{1000}\right)^2 + C_3\left(\frac{T}{1000}\right)^3
+	\end{align*}
+
+	\begin{align*}
+		\int_1^2 c_{p0}\frac{dT}{T}
+		&=
+		\int_1^2 \left(C_0 + C_1\frac{T}{1000} + C_2\left(\frac{T}{1000}\right)^2 + C_3\left(\frac{T}{1000}\right)^3\right)\frac{dT}{T}\\
+		&=
+		C_0\int_1^2 \frac{dT}{T} + \frac{C_1}{1000}\int_1^2 dT + \frac{C_2}{10^6}\int_1^2 TdT + \frac{C_3}{10^9}\int_1^2 T^2dT\\
+		&=
+		C_0\ln\frac{T_2}{T_1} + \frac{C_1}{1000}(T_2 - T_1) + \frac{C_2}{2\cdot10^6}(T_2^2 - T_1^2) + \frac{C_2}{3\cdot10^9}(T_2^3 - T_1^3)
+	\end{align*}
+
+	Finally,
+
+	\begin{align*}
+		s_2 - s_1 = C_0\ln\frac{T_2}{T_1} + \frac{C_1}{1000}(T_2 - T_1) + \frac{C_2}{2\cdot10^6}(T_2^2 - T_1^2) + \frac{C_2}{3\cdot10^9}(T_2^3 - T_1^3) - R\ln\frac{P_2}{P_1}
+	\end{align*}
+
+	For isentropic process, $s_2=s_1$.
+
+	\begin{align*}
+		0 = C_0\ln\frac{T_2}{T_1} + \frac{C_1}{1000}(T_2 - T_1) + \frac{C_2}{2\cdot10^6}(T_2^2 - T_1^2) + \frac{C_2}{3\cdot10^9}(T_2^3 - T_1^3) - R\ln\frac{P_2}{P_1}
+	\end{align*}
+
+	If pressure $P_2$ is given, the unknown is $T_2$. Writing the function in terms of $T$,
+
+	\begin{align*}
+		f(T) = C_0\ln\frac{T_2}{T_1} + \frac{C_1}{1000}(T_2 - T_1) + \frac{C_2}{2\cdot10^6}(T_2^2 - T_1^2) + \frac{C_2}{3\cdot10^9}(T_2^3 - T_1^3) - R\ln\frac{P_2}{P_1}
+	\end{align*}
+	
+	\section{Newton Raphson}
+
+	For NR, derivative of $f(T)$ with respect to $T$ is needed.
+
+	\begin{align*}
+		f^\prime(T) = \frac{C_0}{T} + \frac{C_1}{1000} + \frac{C_2}{10^6}T + \frac{C_2}{10^9}T^2
+	\end{align*}
+
+	Iterate
+
+	\begin{align*}
+		T_\text{new} = T - \frac{f(T)}{f^\prime(T)}
+	\end{align*}
+
+	until $T_\text{new} - T < \epsilon$
+
+	\section{$T$ is given find $\nu$}
+
+	Transpose $\nu_2$ in the following equation
+
+	\begin{align*}
+		0 = (C_0 - R)\ln\frac{T}{T_1} + \frac{C_1}{1000}(T - T_1) + \frac{C_2}{2\cdot10^6}(T^2 - T_1^2) + \frac{C_2}{3\cdot10^9}(T^3 - T_1^3) + R\ln\frac{\nu_2}{\nu_1}
+	\end{align*}
+
+	such that
+
+	\begin{align*}
+		-R(\ln\nu_2 - \ln\nu_1) = (C_0 - R)\ln\frac{T}{T_1} + \frac{C_1}{1000}(T - T_1) + \frac{C_2}{2\cdot10^6}(T^2 - T_1^2) + \frac{C_2}{3\cdot10^9}(T^3 - T_1^3)
+	\end{align*}
+
+	\begin{align*}
+		-R\ln\nu_2 + R\ln\nu_1 = (C_0 - R)\ln\frac{T}{T_1} + \frac{C_1}{1000}(T - T_1) + \frac{C_2}{2\cdot10^6}(T^2 - T_1^2) + \frac{C_2}{3\cdot10^9}(T^3 - T_1^3)
+	\end{align*}
+
+	\begin{align*}
+		-R\ln\nu_2 = (C_0 - R)\ln\frac{T}{T_1} + \frac{C_1}{1000}(T - T_1) + \frac{C_2}{2\cdot10^6}(T^2 - T_1^2) + \frac{C_2}{3\cdot10^9}(T^3 - T_1^3) - R\ln\nu_1
+	\end{align*}
+
+	\begin{align*}
+		\ln\nu_2 = \frac{R - C_0}{R}\ln\frac{T}{T_1} - \frac{C_1}{1000R}(T - T_1) - \frac{C_2}{2\cdot10^6R}(T^2 - T_1^2) - \frac{C_2}{3\cdot10^9R}(T^3 - T_1^3) - \ln\nu_1
+	\end{align*}
+
+	\begin{align*}
+		\nu_2 = \exp\left(\frac{R - C_0}{R}\ln\frac{T}{T_1} - \frac{C_1}{1000R}(T - T_1) - \frac{C_2}{2\cdot10^6R}(T^2 - T_1^2) - \frac{C_2}{3\cdot10^9R}(T^3 - T_1^3) - \ln\nu_1\right)
+	\end{align*}
+
+	\section{qs and qr isochoric}
+
+	\begin{align*}
+		q_s = \int_1^2 c_{\nu0}dT
+	\end{align*}
+
+	\begin{align*}
+		c_{p0} = C_0 + C_1\theta + C_2\theta^2 + C_3\theta^3
+	\end{align*}
+
+	\begin{align*}
+		c_{\nu0} = c_{p0} - R
+	\end{align*}
+
+	\begin{align*}
+		c_{\nu0} = C_0 + C_1\theta + C_2\theta^2 + C_3\theta^3 - R
+	\end{align*}
+
+	\begin{align*}
+		c_{\nu0} = C_0 + \frac{C_1}{10^3}T + \frac{C_2}{10^6}T^2 + \frac{C_3}{10^9}T^3 - R
+	\end{align*}
+
+	\begin{align*}
+		q_s = \int_1^2 \left(C_0 + \frac{C_1}{10^3}T + \frac{C_2}{10^6}T^2 + \frac{C_3}{10^9}T^3 - R\right)dT
+	\end{align*}
+
+	\begin{align*}
+		q_s = (C_0 - R)\int_1^2 dT + \frac{C_1}{10^3}\int_1^2 TdT + \frac{C_2}{10^6}\int_1^2 T^2dT + \frac{C_3}{10^9}\int_1^2 T^3dT
+	\end{align*}
+
+	\begin{align*}
+		q_s = (C_0 - R)(T_2 - T_1) + \frac{C_1}{2\cdot10^3}(T_2^2 - T_1^2) + \frac{C_2}{3\cdot10^6}(T_2^3 - T_1^3) + \frac{C_3}{4\cdot10^9}(T_2^4 - T_1^4)
+	\end{align*}
+
+	Unknown is $T_2$.
+
+	\begin{align*}
+		q_s = (C_0 - R)(T - T_1) + \frac{C_1}{2\cdot10^3}(T^2 - T_1^2) + \frac{C_2}{3\cdot10^6}(T^3 - T_1^3) + \frac{C_3}{4\cdot10^9}(T^4 - T_1^4)
+	\end{align*}
+
+	\begin{align*}
+		f(T) = (C_0 - R)(T - T_1) + \frac{C_1}{2\cdot10^3}(T^2 - T_1^2) + \frac{C_2}{3\cdot10^6}(T^3 - T_1^3) + \frac{C_3}{4\cdot10^9}(T^4 - T_1^4) - q_s
+	\end{align*}
+
+	Derivative
+
+	\begin{align*}
+		f^\prime(T) = (C_0 - R) + \frac{C_1}{10^3}T + \frac{C_2}{10^6}T^2 + \frac{C_3}{10^9}T^3
+	\end{align*}
+
+	
+	
+\end{document}

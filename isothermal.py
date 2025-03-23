@@ -29,17 +29,15 @@ def isothermal(RS, prop, typ, R, const_cap):
 		case 'P':
 			P = prop
 			v = C / P
-			if const_cap is True:
-				s = entropy_const_cap(RS, T, v, cv, R)
-			else:
-				s = entropy_var_cap(RS, T, v, R)
+			s = entropy_const_cap(RS, T, v, cv, R)
+			if const_cap == False:
+				s = entropy_var_cap(RS, T, P, R)
 		case 'v':
 			v = prop
 			P = C / v
-			if const_cap is True:
-				s = entropy_const_cap(RS, T, v, cv, R)
-			else:
-				s = entropy_var_cap(RS, T, v, R)
+			s = entropy_const_cap(RS, T, v, cv, R)
+			if const_cap == False:
+				s = entropy_var_cap(RS, T, P, R)
 		case 's':
 			s = prop
 			v = RS.v * exp((s - RS.s) / R)

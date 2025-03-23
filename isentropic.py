@@ -1,5 +1,6 @@
 from state import State
 from specific_heat import specific_heats
+from entropy import *
 
 
 def isentropic(RS, prop, typ, R, const_cap):
@@ -14,7 +15,7 @@ def isentropic(RS, prop, typ, R, const_cap):
 		prop (float): Numerical value of known property
 		typ (str): Type of known property: One of 'P', 'v', 'T'
 		R (float): Specific gas constant (K/kg.K)
-		const_cap: True if speficic heat capacity to be taken as constant
+		const_cap: True if specific heat capacity to be taken as constant
 
 	Returns:
 		State (State): The thermodynamic state.
@@ -27,18 +28,25 @@ def isentropic(RS, prop, typ, R, const_cap):
 	match typ:
 		case 'P':
 			P = prop
-			v = (C / P) ** (1 / k)
-			T = P * v / R
+			if const_cap:
+				T = T_isentropic_Pgiven_const_cap(P, RS, k)
+			else:
+				T = T_isentropic_Pgiven_var_cap(P, RS, R)
+			v = R * T / P
 		case 'v':
 			v = prop
-			P = C / v ** k # wrong! works only for const cap!
-			T = P * v / R
+			if const_cap:
+				T = T_isentropic_vgiven_const_cap(v, RS, k)
+			else:
+				T = T_isentropic_vgiven_var_cap(v, RS, R)
+			P = R * T / v
 		case 'T':
 			T = prop
-			# cp, cv, k = specific_heats(T, R, const_cap)
-			# v = (C / R * T) ** (1 / (k - 1))
-			v = RS.v / (T / RS.T) ** (1 / (k - 1))
-			P = R * T / v 
+			if const_cap:
+				v = v_isentropic_Tgiven_const_cap(T, RS, k)
+			else:
+				v = v_isentropic_Tgiven_var_cap(T, RS, R)
+			P = R * T / v
 		case _:
 			assert(False)
 

@@ -38,34 +38,83 @@ def specific_heats(T, R, const_cap):
 
 def get_temperature_by_integrating_cv_dT(RS, R, q):
 	'''
-	Finds temperature from given heat input by integrating du = cv * dT.
-	When there is no work done by/to control mass, dq = du.
+	Finds temperature from given heat input by integrating du = cv * dT. cv is the specific heat capacity which depends on temperature.
+	When there is no work done by/to control mass, dq = du. That is, q = int cv(T) * dT.
+
+	Arguments:
+		RS (float): Reference state
+		R (float): Specific gas constant
+		q (float): Heat transfer during the process
 
 	Returns:
-		T (float): The temperature which corresponds to given amount of heat if the temperature is less than Tmax=5000 K. Otherwise, returns None.
-
-	Nomenclature:
-		qcur: Current amount of heat
+		T (float): The temperature which corresponds to given amount of heat.
 	'''
-	qcur = 0
-	prevT = RS.T
-	Tmax = 5000
-	for T in np.arange(RS.T, Tmax, 1000):
-		cp, cv, k = specific_heats(RS.T, R, False)
-		qcur += cv * (T - prevT)
-		prevT = copy(T)
-		if qcur >= q:
-			return T
+
+	C0 = 1.05
+	C1 = -0.365
+	C2 = 0.85
+	C3 = -0.39
+
+	C0 *= 1000
+	C1 *= 1000
+	C2 *= 1000
+	C3 *= 1000
 	
-	return None
+	T = RS.T # initial guess
+	error = float('inf')
+	tolerance = 1
+
+	# q must be physical otherwise the function will not have root so NR will not converge. Use the snippet below to see te root.
+	# Ts = np.linspace(RS.T, 3000, 100)
+	# f = []
+	# import matplotlib.pyplot as plt
+	# for T in Ts:
+	# 	ff = (C0 - R) * (T - RS.T)\
+	# 		+ C1 * (T ** 2 - RS.T ** 2) / 2e3\
+	# 		+ C2 * (T ** 3 - RS.T ** 3) / 3e6\
+	# 		+ C3 * (T ** 4 - RS.T ** 4) / 4e9\
+	# 		- q
+	# 	f.append(ff)
+	# plt.plot(Ts, f)
+	# plt.axhline(0)
+	# plt.show()
+
+	while error > tolerance:
+
+		f = (C0 - R) * (T - RS.T)\
+		+ C1 * (T ** 2 - RS.T ** 2) / 2e3\
+		+ C2 * (T ** 3 - RS.T ** 3) / 3e6\
+		+ C3 * (T ** 4 - RS.T ** 4) / 4e9\
+		- q
+
+		fp = C0 - R\
+		+ C1 * T / 1e3\
+		+ C2 * T ** 2 / 1e6\
+		+ C3 * T ** 3 / 1e9
+
+		T_old = copy(T)
+		T = T - f / fp
+
+		error = abs(T - T_old)
+
+	return T
 
 def get_heat_by_integrating_cv_dT(Ta, Tb, R):
-	q = 0
-	prevT = Ta
-	for T in np.arange(Ta, Tb, 1000):
-		cp, cv, k = specific_heats(T, R, False)
-		q += cv * (T - prevT)
-		prevT = copy(T)
+
+	C0 = 1.05
+	C1 = -0.365
+	C2 = 0.85
+	C3 = -0.39
+
+	C0 *= 1000
+	C1 *= 1000
+	C2 *= 1000
+	C3 *= 1000
+
+	q = (C0 - R) * (Tb - Ta)\
+		+ C1 * (Tb ** 2 - Ta ** 2) / 2e3\
+		+ C2 * (Tb ** 3 - Ta ** 3) / 3e6\
+		+ C3 * (Tb ** 4 - Ta ** 4) / 4e9
 
 	return q
 

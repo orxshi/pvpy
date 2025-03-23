@@ -106,7 +106,7 @@ def carnot(cr, qs, GS, const_cap):
 		qs_calc = S.T * (GS.s - S.s)
 		error = qs_calc - qs
 		# print(vc, qs_calc, qs)
-		# print(error)
+		print(error)
 
 		vc += vL / 1000
 
@@ -160,9 +160,9 @@ def carnot(cr, qs, GS, const_cap):
 	return states
 
 
-# GS = State.PT(101325, 300, 0, 287)
-# states = carnot(9.890421999965, 96000, GS, True)
-# states = carnot_Tmax_qs(GS.T + 300, 96000, GS, True)
+GS = State.PT(101325, 300, 0, 287)
+# states = carnot(6, 200000, GS, True)
+states = carnot_Tmax_qs(GS.T + 300, 200000, GS, True)
 
 # pv([states], ['Carnot'])
 # ts([states], ['Carnot'])
