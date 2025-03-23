@@ -19,11 +19,13 @@
 		P\nu = RT
 	\end{align*}
 
-	\section{Isentropic process}
+	\section{Isentropic process with constant specific heat capacities}
 
 	\begin{align*}
 		s = \text{constant}
 	\end{align*}
+
+	\subsection{Constant specific heats}
 
 	\begin{align*}
 		\frac{P_2}{P_1} = \left(\frac{\nu_1}{\nu_2}\right)^k
@@ -34,7 +36,45 @@
 	\end{align*}
 
 	\begin{align*}
-		\frac{T_2}{T_1} = \left(\frac{\nu_1}{\nu_2}\right)^{(k-1)/k}
+		\frac{T_2}{T_1} = \left(\frac{P_2}{P_1}\right)^{(k-1)/k}
+	\end{align*}
+
+	\subsection{Variable specific heats}
+
+	\subsubsection{Given specific volume}
+
+	If specific volume of the state of interest is given then get temperature of the state of interest numerically. Use Newton-Raphson to find roots of function
+
+	\begin{align*}
+		f(T) = (C_0 - R)\ln\frac{T}{T_1} + \frac{C_1}{1000}(T - T_1) + \frac{C_2}{2\cdot10^6}(T^2 - T_1^2) + \frac{C_2}{3\cdot10^9}(T^3 - T_1^3) + R\ln\frac{\nu_2}{\nu_1}
+	\end{align*}
+
+	and it's derivative
+
+	\begin{align*}
+		f^\prime(T) = \frac{C_0 - R}{T} + \frac{C_1}{1000} + \frac{C_2}{10^6}T + \frac{C_2}{10^9}T^2
+	\end{align*}
+
+	\subsubsection{Given pressure}
+
+	If pressure of the state of interest is given then get temperature of the state of interest numerically. Use Newton-Raphson to find roots of function
+
+	\begin{align*}
+		f(T) = C_0\ln\frac{T_2}{T_1} + \frac{C_1}{1000}(T_2 - T_1) + \frac{C_2}{2\cdot10^6}(T_2^2 - T_1^2) + \frac{C_2}{3\cdot10^9}(T_2^3 - T_1^3) - R\ln\frac{P_2}{P_1}
+	\end{align*}
+	
+	and it's derivative
+
+	\begin{align*}
+		f^\prime(T) = \frac{C_0}{T} + \frac{C_1}{1000} + \frac{C_2}{10^6}T + \frac{C_2}{10^9}T^2
+	\end{align*}
+
+	\subsubsection{Given temperature}
+
+	If temperature $T$ is given no iteration is required.
+
+	\begin{align*}
+		\nu_2 = \exp\left(\frac{R - C_0}{R}\ln\frac{T}{T_1} - \frac{C_1}{1000R}(T - T_1) - \frac{C_2}{2\cdot10^6R}(T^2 - T_1^2) - \frac{C_2}{3\cdot10^9R}(T^3 - T_1^3) - \ln\nu_1\right)
 	\end{align*}
 
 	\section{Isobaric process}
